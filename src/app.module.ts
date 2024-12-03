@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { UsersModule } from './users/users.module';
 import { TokensModule } from './common/tokens/tokens.module';
+import { MailModule } from './common/mail/mail.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TokensModule } from './common/tokens/tokens.module';
     AuthModule,
     UsersModule,
     TokensModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
