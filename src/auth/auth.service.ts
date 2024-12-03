@@ -43,6 +43,22 @@ export class AuthService {
     };
   }
 
+  async refreshToken(user: any) {
+    const payload = { username: user.username, sub: user.id };
+    const findUser = await this.usersService.findByUsername(user.username);
+    const tokenpairs = this.createTokenPair(payload);
+    const currentDate = new Date(); // Ngày giờ hiện tại
+    const expires_at = new Date(currentDate); // Tạo bản sao ngày hiện tại
+
+    expires_at.setDate(currentDate.getDate() + 3);
+    await this.tokenService.saveToken({
+      token: `${tokenpairs.newRefreshToken}`,
+      user: findUser,
+      expires_at: expires_at,
+    });
+    return tokenpairs;
+  }
+
   async login(
     loginDto: LoginDto,
   ): Promise<{ access_token: string; refresh_Token: string; user: User }> {
@@ -80,6 +96,10 @@ export class AuthService {
   }
 
   async logout(token: string) {
+    return this.tokenService.revokeToken(token);
+  }
+
+  async revokeToken(token: string) {
     return this.tokenService.revokeToken(token);
   }
 }

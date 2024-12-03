@@ -15,6 +15,10 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
+  async findByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { username } });
+  }
+
   async create(userData: Partial<User>): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     return this.userRepository.save({ ...userData, password: hashedPassword });

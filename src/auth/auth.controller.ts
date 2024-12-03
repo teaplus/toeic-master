@@ -42,9 +42,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   async newAccessToken(@Body() body: { refreshToken: string }, @Request() req) {
-    return {
-      body,
-      user: req.user,
-    };
+    await this.authService.revokeToken(body.refreshToken);
+    return await this.authService.refreshToken(req.user);
   }
 }

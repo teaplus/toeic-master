@@ -50,7 +50,10 @@ export class TokenService {
     const refreshToken = await this.refreshTokenRepository.findOne({
       where: { token },
     });
-
+    console.log('refreshtoken', refreshToken);
+    if (!refreshToken) {
+      return true;
+    }
     return refreshToken.revoked;
   }
 
