@@ -34,7 +34,7 @@ export class RefreshTokenGuard extends AuthGuard('jwt') {
       const payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_SECRET_REFRESH,
       });
-      request.user = payload; // Gắn payload vào request để sử dụng trong controller
+      request.user = payload; // Gắn payload vào request để sử dụng trong controllerr
       return true;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
