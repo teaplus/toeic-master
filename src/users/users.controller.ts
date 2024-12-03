@@ -1,16 +1,27 @@
 import {
+  BadRequestException,
+  Body,
   // BadRequestException,
   Controller,
-  ForbiddenException,
   Get,
+  // Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ERROR_CODES } from 'src/common/constants/error-codes';
-
-@Controller('cats')
+import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { UsersService } from './users.service';
+import { ProfileDTO } from './dto/profile.dto';
+@Controller('user')
 export class UsersController {
-  @Get()
-  getCustomError() {
-    const error = ERROR_CODES.CUSTOM_ERROR('This is a custom error');
-    throw new ForbiddenException(error.message);
+  constructor(private readonly usersService: UsersService) {}
+  @UseGuards(AccessTokenGuard)
+  @Get('profile')
+  async getProfile(@Body() body: { username: string }): Promise<ProfileDTO> {
+    const profile = await this.usersService.findByUsername(body.username);
+    if (!profile) {
+      throw new BadRequestException('User not found');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...newProfile } = profile;
+    return newProfile;
   }
 }
