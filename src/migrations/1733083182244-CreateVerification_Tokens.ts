@@ -15,8 +15,10 @@ export class CreateVerificationTokens1733083182244
         columns: [
           {
             name: 'id',
-            type: 'varchar',
+            type: 'int',
             isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment', // Tự động tăng
           },
           {
             name: 'user_id',

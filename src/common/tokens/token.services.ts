@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from './refreshToken.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { VerificationToken } from './verifycationToken.entity';
 
 @Injectable()
 export class TokenService {
@@ -10,6 +11,8 @@ export class TokenService {
     private readonly jwtService: JwtService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    @InjectRepository(VerificationToken)
+    private readonly verifyTokenRepository: Repository<VerificationToken>,
   ) {}
 
   createToken(payload: any, exp: string) {
@@ -65,5 +68,13 @@ export class TokenService {
       refreshToken.revoked = true;
       await this.refreshTokenRepository.save(refreshToken);
     }
+  }
+
+  //################################# VerifyToken Repository ######################
+
+  async saveVerifyToken(
+    verifyToken: Partial<VerificationToken>,
+  ): Promise<VerificationToken> {
+    return this.verifyTokenRepository.save(verifyToken);
   }
 }

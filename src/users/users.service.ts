@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -22,6 +22,15 @@ export class UsersService {
   async create(userData: Partial<User>): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     return this.userRepository.save({ ...userData, password: hashedPassword });
+  }
+
+  async activateUser(email: string) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('user chưa đăng ký');
+    }
+    await this.userRepository.update(user.id, { ...user, is_activated: true });
+    return 'Successfull';
   }
 
   async validateUser(email: string, password: string): Promise<User | null> {

@@ -22,6 +22,11 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('resend-verification')
+  async reSendVerification(@Body() body: { email: string }) {
+    return this.authService.reSendVerifyLink(body.email);
+  }
+
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);

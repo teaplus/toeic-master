@@ -7,11 +7,10 @@ export class MailService {
   private transporter: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
-    // Tạo transporter với cấu hình từ biến môi trường
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('MAIL_HOST'),
       port: this.configService.get<number>('MAIL_PORT'),
-      secure: this.configService.get<boolean>('MAIL_SECURE'), // true nếu sử dụng SSL/TLS
+      secure: this.configService.get<boolean>('MAIL_SECURE'),
       auth: {
         user: this.configService.get<string>('MAIL_USER'),
         pass: this.configService.get<string>('MAIL_PASSWORD'),
@@ -19,20 +18,12 @@ export class MailService {
     });
   }
 
-  // Gửi email
-  async sendMail(to: string, subject: string, content: string, isHtml = true) {
-    console.log('SMTP Config:', {
-      host: this.configService.get<string>('MAIL_HOST'),
-      port: this.configService.get<number>('MAIL_PORT'),
-      secure: this.configService.get<boolean>('MAIL_SECURE'),
-      user: this.configService.get<string>('MAIL_USER'),
-      pass: this.configService.get<string>('MAIL_PASSWORD'),
-    });
+  async sendEmail(to: string, subject: string, content: string) {
     const mailOptions: nodemailer.SendMailOptions = {
       from: this.configService.get<string>('MAIL_FROM'),
       to,
       subject,
-      [isHtml ? 'html' : 'text']: content, // Gửi dạng HTML hoặc plain text
+      html: content,
     };
 
     try {
