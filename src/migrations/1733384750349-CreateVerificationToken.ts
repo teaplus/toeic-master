@@ -5,7 +5,7 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class CreateVerificationTokens1733083182244
+export class CreateVerificationToken1733384750349
   implements MigrationInterface
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
