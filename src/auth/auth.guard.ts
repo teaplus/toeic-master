@@ -28,7 +28,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const token = authHeader.split(' ')[1];
-    console.log('guard refreshtoken', refreshToken);
+    // console.log('guard refreshtoken', refreshToken);
 
     if (token) {
       const decoded = this.tokenService.verifyToken(refreshToken);

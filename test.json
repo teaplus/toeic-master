@@ -1,0 +1,19 @@
+{
+    "testSession_id": 2,
+    "part": [{
+        "id": 2,
+        "answers": [{
+            "questionId": 1,
+            "answersId": 3
+        }, {
+            "questionId": 2,
+            "answersId": 5
+        }]
+    }, {
+        "id": 3,
+        "answers": [{
+            "questionId": 3,
+            "answersId": 10
+        }]
+    }]
+}

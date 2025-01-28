@@ -37,7 +37,7 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
       if (veriryToken === 'InvalidToken') {
         throw new UnauthorizedException('InvalidToken');
       }
-      console.log('token', veriryToken);
+      // console.log('token', veriryToken);
     }
     return true;
   }

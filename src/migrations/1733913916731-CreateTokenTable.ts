@@ -5,13 +5,11 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class CreateVerificationToken1733384750349
-  implements MigrationInterface
-{
+export class CreateTokenTable1733913916731 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'verifycation_tokens',
+        name: 'tokens',
         columns: [
           {
             name: 'id',
@@ -25,7 +23,13 @@ export class CreateVerificationToken1733384750349
             type: 'integer',
           },
           {
-            name: 'verify_token',
+            name: 'type',
+            type: 'enum',
+            enum: ['refreshToken', 'verificationToken'],
+            default: `'refreshToken'`,
+          },
+          {
+            name: 'token',
             type: 'varchar',
           },
           {
@@ -34,11 +38,16 @@ export class CreateVerificationToken1733384750349
             default: false,
           },
           {
+            name: 'device_info',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'expired_at',
             type: 'timestamp',
           },
           {
-            name: 'create_at',
+            name: 'created_at',
             type: 'timestamp',
             default: 'CURRENT_TIMESTAMP',
           },
@@ -48,7 +57,7 @@ export class CreateVerificationToken1733384750349
       true, // true để cho phép tạo bảng ngay cả khi bảng đã tồn tại
     );
     await queryRunner.createForeignKey(
-      'verifycation_tokens',
+      'tokens',
       new TableForeignKey({
         columnNames: ['user_id'],
         referencedColumnNames: ['id'],
@@ -59,14 +68,14 @@ export class CreateVerificationToken1733384750349
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const table = await queryRunner.getTable('verifycation_tokens');
+    const table = await queryRunner.getTable('tokens');
     const foreignKey = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('user_id') !== -1,
     );
     if (foreignKey) {
-      await queryRunner.dropForeignKey('verifycation_tokens', foreignKey);
+      await queryRunner.dropForeignKey('tokens', foreignKey);
     }
 
-    await queryRunner.dropTable('verifycation_tokens', true);
+    await queryRunner.dropTable('tokens', true);
   }
 }

@@ -8,6 +8,7 @@ import { JwtStrategy } from './jwt.strategy';
 
 import { TokensModule } from 'src/common/tokens/tokens.module';
 import { MailModule } from 'src/common/mail/mail.module';
+import { OAuth2Client } from 'google-auth-library';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { MailModule } from 'src/common/mail/mail.module';
     MailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, OAuth2Client],
   exports: [AuthService],
 })
 export class AuthModule {}

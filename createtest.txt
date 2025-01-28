@@ -1,0 +1,243 @@
+### Phân tích chức năng tạo bài thi (**Create Test**)
+
+Chức năng **Create Test** sẽ liên quan đến các bảng cơ sở dữ liệu như sau:
+- **`tests`**: Lưu thông tin chung về bài thi (tên bài thi, tổng điểm, ngày tạo).
+- **`sections`**: Lưu các phần (section) thuộc bài thi.
+- **`parts`**: Lưu các phần nhỏ hơn (part) trong từng `section`, kèm thông tin mô tả.
+- **`questions`**: Lưu các câu hỏi trong từng `part`.
+- **`answers`**: Lưu các đáp án cho từng câu hỏi.
+
+---
+
+### Các bước tạo bài thi
+1. **Tạo bài thi**:
+   - Thêm bản ghi vào bảng `tests` với thông tin:
+     - `name`: Tên bài thi.
+     - `total_score`: Tổng điểm tối đa.
+     - `created_at`: Thời gian tạo bài thi.
+
+2. **Thêm các phần (**section**) vào bài thi**:
+   - Thêm các bản ghi vào bảng `sections` với thông tin:
+     - `test_id`: ID của bài thi vừa tạo.
+     - `name`: Tên từng phần (ví dụ: Listening, Reading).
+
+3. **Thêm các phần nhỏ (**part**) vào từng phần**:
+   - Thêm bản ghi vào bảng `parts` với thông tin:
+     - `section_id`: ID của `section` tương ứng.
+     - `name`: Tên part.
+     - `description`: Mô tả nội dung.
+     - `order`: Số thứ tự.
+
+4. **Thêm câu hỏi vào từng phần**:
+   - Thêm các bản ghi vào bảng `questions` với thông tin:
+     - `part_id`: ID của part tương ứng.
+     - `content`: Nội dung câu hỏi.
+     - `type`: Loại câu hỏi (ví dụ: multiple-choice, audio-based).
+     - `audio_url`: URL của file audio (nếu có).
+     - `image_url`: URL của hình ảnh (nếu có).
+
+5. **Thêm đáp án cho từng câu hỏi**:
+   - Thêm các bản ghi vào bảng `answers` với thông tin:
+     - `question_id`: ID của câu hỏi tương ứng.
+     - `content`: Nội dung đáp án.
+     - `is_correct`: Đáp án đúng hay sai.
+
+---
+
+### Dữ liệu mẫu cho **Create Test**
+#### Input giả định:
+```json
+{
+  "name": "TOEIC Test 1",
+  "total_score": 990,
+  "sections": [
+    {
+      "name": "Listening",
+      "parts": [
+        {
+          "name": "Part 1: Photographs",
+          "description": "Choose the best description of the image.",
+          "order": 1,
+          "questions": [
+            {
+              "content": "What does the image show?",
+              "type": "multiple-choice",
+              "audio_url": null,
+              "answers": [
+                { "content": "A man is walking.", "is_correct": true },
+                { "content": "A dog is running.", "is_correct": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reading",
+      "parts": [
+        {
+          "name": "Part 5: Incomplete Sentences",
+          "description": "Complete the sentence with the best option.",
+          "order": 1,
+          "questions": [
+            {
+              "content": "The company ______ a new policy.",
+              "type": "multiple-choice",
+              "audio_url": null,
+              "answers": [
+                { "content": "implements", "is_correct": true },
+                { "content": "implementing", "is_correct": false }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Các thao tác cơ sở dữ liệu:
+1. **Thêm bài thi vào `tests`:**
+   ```sql
+   INSERT INTO tests (name, total_score, created_at)
+   VALUES ('TOEIC Test 1', 990, NOW());
+   ```
+
+2. **Thêm các `sections`:**
+   ```sql
+   INSERT INTO sections (test_id, name)
+   VALUES (1, 'Listening'), (1, 'Reading');
+   ```
+
+3. **Thêm các `parts`:**
+   ```sql
+   INSERT INTO parts (section_id, name, description, order)
+   VALUES
+   (1, 'Part 1: Photographs', 'Choose the best description of the image.', 1),
+   (2, 'Part 5: Incomplete Sentences', 'Complete the sentence with the best option.', 1);
+   ```
+
+4. **Thêm các `questions`:**
+   ```sql
+   INSERT INTO questions (part_id, content, type, audio_url)
+   VALUES
+   (1, 'What does the image show?', 'multiple-choice', NULL),
+   (2, 'The company ______ a new policy.', 'multiple-choice', NULL);
+   ```
+
+5. **Thêm các `answers`:**
+   ```sql
+   INSERT INTO answers (question_id, content, is_correct)
+   VALUES
+   (1, 'A man is walking.', TRUE),
+   (1, 'A dog is running.', FALSE),
+   (2, 'implements', TRUE),
+   (2, 'implementing', FALSE);
+   ```
+
+---
+
+### Tóm tắt
+Để tạo bài thi, bạn cần thực hiện theo thứ tự: **`tests` → `sections` → `parts` → `questions` → `answers`**.  
+Nếu bạn sử dụng **ORM** như TypeORM hoặc Sequelize, việc này có thể được thực hiện thông qua các lệnh liên kết tự động, giúp giảm tải công việc truy vấn thủ công.
+
+
+##################################################################
+
+Dựa trên cấu trúc bảng bạn đưa ra, mô hình dữ liệu có vẻ hợp lý để quản lý hệ thống thi cử với các chức năng như quản lý người dùng, bài thi, câu hỏi và đáp án. Tuy nhiên, cần kiểm tra kỹ lưỡng các mối quan hệ và một số chi tiết nhỏ để đảm bảo tính nhất quán và khả năng mở rộng. Dưới đây là phân tích từng bảng và mối quan hệ để xác nhận độ chính xác:
+
+---
+
+### **1. Bảng `users`**
+- **Cột `id`:** Primary key, phù hợp.
+- **Các thông tin khác (`username`, `email`, `password`, v.v.):** Phù hợp với thông tin cần thiết cho user.
+- **Cột `is_active`:** Giúp quản lý trạng thái của user, hợp lý.
+- **Cột `created_at`, `updated_at`:** Theo dõi thời gian tạo và cập nhật, cần thiết.
+
+Không có gì sai sót trong cấu trúc bảng này.
+
+---
+
+### **2. Bảng `tokens`**
+- **Cột `id`:** Dùng làm primary key, phù hợp.
+- **Cột `user_id`:** Foreign key tham chiếu `users.id`, đúng.
+- **Cột `type`:** Enum phân biệt `refreshToken` và `verificationToken`, hợp lý.
+- **Cột `expired_at`:** Theo dõi thời gian hết hạn của token, cần thiết.
+
+Mối quan hệ `user_id -> users.id` là hợp lệ. Không có vấn đề trong bảng này.
+
+---
+
+### **3. Bảng `tests`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `name`, `total_score`:** Đúng mục đích.
+- **Cột `created_at`:** Theo dõi thời gian tạo bài thi, hợp lý.
+
+---
+
+### **4. Bảng `sections`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `test_id`:** Foreign key tham chiếu `tests.id`, đúng.
+- **Cột `name`:** Mô tả phần của bài thi, phù hợp.
+
+Mối quan hệ `test_id -> tests.id` là hợp lệ.
+
+---
+
+### **5. Bảng `parts`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `section_id`:** Foreign key tham chiếu `sections.id`, đúng.
+- **Cột `name`, `description`:** Đúng mục đích.
+- **Cột `order`:** Để xác định thứ tự của các phần, hợp lý.
+
+Mối quan hệ `section_id -> sections.id` là hợp lệ.
+
+---
+
+### **6. Bảng `questions`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `part_id`:** Foreign key tham chiếu `parts.id`, đúng.
+- **Cột `content`, `type`, `audio_url`:** Đúng mục đích.
+
+Mối quan hệ `part_id -> parts.id` là hợp lệ.
+
+---
+
+### **7. Bảng `answers`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `question_id`:** Foreign key tham chiếu `questions.id`, đúng.
+- **Cột `content`, `is_correct`:** Phù hợp để lưu đáp án và đánh dấu đúng/sai.
+
+Mối quan hệ `question_id -> questions.id` là hợp lệ.
+
+---
+
+### **8. Bảng `test_sessions`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `user_id`:** Foreign key tham chiếu `users.id`, đúng.
+- **Cột `test_id`:** Foreign key tham chiếu `tests.id`, đúng.
+- **Cột `part_id`:** Foreign key tham chiếu `parts.id`, đúng (nếu cần theo dõi từng phần cụ thể).
+
+Các cột thời gian (`started_at`, `completed_at`) và trạng thái (`status`) hợp lý cho việc quản lý phiên làm bài.
+
+---
+
+### **9. Bảng `responses`**
+- **Cột `id`:** Primary key, hợp lý.
+- **Cột `test_session_id`:** Foreign key tham chiếu `test_sessions.id`, đúng.
+- **Cột `question_id`:** Foreign key tham chiếu `questions.id`, đúng.
+- **Cột `answer_id`:** Foreign key tham chiếu `answers.id`, đúng.
+- **Cột `is_correct`:** Lưu trạng thái đúng/sai, hợp lý.
+
+---
+
+### **10. Mối quan hệ tổng thể**
+Các mối quan hệ giữa bảng được thiết kế tốt và hợp lý:
+
+- **`users` -> `test_sessions`:** Một user có thể tham gia nhiều bài thi.
+- **`tests` -> `sections` -> `parts`:** Một bài thi có nhiều phần và mỗi phần thuộc một section.
+- **`parts` -> `questions` -> `answers`:** Một phần có nhiều câu hỏi, và mỗi câu hỏi có nhiều đáp án.
+- **`test_sessions` -> `responses`:** Một phiên làm bài có thể lưu nhiều câu trả lời.
+
+---

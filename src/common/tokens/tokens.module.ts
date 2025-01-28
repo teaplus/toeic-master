@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TokenService } from './token.services';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RefreshToken } from './refreshToken.entity';
-import { VerificationToken } from './verifycationToken.entity';
+import { Token } from './Token.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -11,7 +11,8 @@ import { VerificationToken } from './verifycationToken.entity';
       secret: process.env.JWT_SECRET || 'secterkey',
       signOptions: { expiresIn: '3h' },
     }),
-    TypeOrmModule.forFeature([RefreshToken, VerificationToken]),
+    TypeOrmModule.forFeature([Token]),
+    forwardRef(() => UsersModule),
   ],
   providers: [TokenService],
   exports: [TokenService],

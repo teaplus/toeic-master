@@ -23,7 +23,6 @@ export class RefreshTokenGuard extends AuthGuard('jwt') {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh Token is missing');
     }
-    console.log('token', refreshToken);
     const isTokenValid = await this.tokenService.checkRevokeToken(refreshToken);
     if (isTokenValid) {
       throw new UnauthorizedException('InvalidToken');

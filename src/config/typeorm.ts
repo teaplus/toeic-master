@@ -12,11 +12,9 @@ export const typeOrmDataSourceOptions: DataSourceOptions = {
   port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
-  database: process.env.DB_NAME || 'database',
-  entities: ['**/*.entity{.js,.ts}'], // Chỉ file biên dịch
-  migrations: [
-    'D:\Work\Project\DACNTT2\Source\toeic-api\src\migrations\*{.js,.ts}',
-  ],
+  database: process.env.DB_NAME || 'toeic-db',
+  entities: ['dist/**/*.entity{.js,.ts}'], // Chỉ file biên dịch
+  migrations: ['dist/src/migrations/*{.js,.ts}'], // Chỉ file biên dịch
   synchronize: false, // Không tự đồng bộ schema
 };
 

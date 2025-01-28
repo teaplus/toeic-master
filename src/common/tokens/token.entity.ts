@@ -8,22 +8,29 @@ import {
 } from 'typeorm';
 import { User } from 'src/users/user.entity';
 
-@Entity('refresh_tokens')
-export class RefreshToken {
+@Entity('tokens')
+export class Token {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()
   token: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['refreshToken', 'verificationToken'],
+    default: 'refreshToken',
+  })
+  type: 'refreshToken' | 'verificationToken';
+
   @Column({ type: 'timestamp' })
-  expires_at: Date;
+  expired_at: Date;
 
   @CreateDateColumn()
   created_at: Date;
 
   @Column({ type: 'boolean', default: false })
-  revoked: boolean;
+  is_used: boolean;
 
   @Column({ type: 'varchar', nullable: true })
   device_info: string;

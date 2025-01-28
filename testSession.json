@@ -1,0 +1,1058 @@
+{
+  "id": 16,
+  "timeRemaining": 7380,
+  "startedAt": "2025-01-13T19:34:45.771Z",
+  "completedAt": null,
+  "status": "in_progress",
+  "total_score": null,
+  "responses": [
+    {
+      "id": 202,
+      "isCorrect": false,
+      "answer": {
+        "id": 25150,
+        "content": "each",
+        "is_correct": false
+      },
+      "question": {
+        "id": 6488,
+        "number": 8,
+        "passage": "<div class=\"alert alert-warning\"><p>At Razam Marketing there are................................opportunities for professions' advancement</p>\n</div>",
+        "content": "At Razam Marketing there are................................opportunities for professions' advancement",
+        "group": "part_5_8",
+        "type": null,
+        "audio_url": null,
+        "image_url": null
+      }
+    },
+    {
+      "id": 201,
+      "isCorrect": false,
+      "answer": {
+        "id": 25021,
+        "content": "Accessing",
+        "is_correct": false
+      },
+      "question": {
+        "id": 6454,
+        "number": 2,
+        "passage": "<div class=\"alert alert-warning\"><p>......................... to the exercise room is included with your stay at the Bayland Hotel.</p>\n</div>",
+        "content": "......................... to the exercise room is included with your stay at the Bayland Hotel.",
+        "group": "part_5_2",
+        "type": null,
+        "audio_url": null,
+        "image_url": null
+      }
+    },
+    {
+      "id": 200,
+      "isCorrect": true,
+      "answer": {
+        "id": 24994,
+        "content": "fully",
+        "is_correct": true
+      },
+      "question": {
+        "id": 6447,
+        "number": 1,
+        "passage": "<div class=\"alert alert-warning\"><p>All shelves in the holiday merchandise section need to remain ..................... stocked.</p>\n</div>",
+        "content": "All shelves in the holiday merchandise section need to remain ..................... stocked.",
+        "group": "part_5_1",
+        "type": null,
+        "audio_url": null,
+        "image_url": null
+      }
+    }
+  ],
+  "test": {
+    "id": 78,
+    "name": "Full Test TOEIC Reading, Listening 3 - Part 5",
+    "type": "PART_TEST",
+    "total_score": 0,
+    "total_questions": 30,
+    "total_time": 123,
+    "partNumber": 5,
+    "level": null,
+    "created_at": "2025-01-09T08:38:37.965Z",
+    "sections": [
+      {
+        "id": 115,
+        "name": "Reading Comprehension",
+        "type": "READING",
+        "parts": [
+          {
+            "id": 284,
+            "numberOfQuestions": 30,
+            "partName": "Incomplete Sentences",
+            "description": null,
+            "partNumber": 5,
+            "questions": [
+              {
+                "id": 6447,
+                "number": 1,
+                "passage": "<div class=\"alert alert-warning\"><p>All shelves in the holiday merchandise section need to remain ..................... stocked.</p>\n</div>",
+                "content": "All shelves in the holiday merchandise section need to remain ..................... stocked.",
+                "group": "part_5_1",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 24986,
+                    "content": "full",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 24994,
+                    "content": "fully",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 24999,
+                    "content": "fuller",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25004,
+                    "content": "fullest",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6454,
+                "number": 2,
+                "passage": "<div class=\"alert alert-warning\"><p>......................... to the exercise room is included with your stay at the Bayland Hotel.</p>\n</div>",
+                "content": "......................... to the exercise room is included with your stay at the Bayland Hotel.",
+                "group": "part_5_2",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25012,
+                    "content": "Access",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25016,
+                    "content": "Accessed",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25021,
+                    "content": "Accessing",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25026,
+                    "content": "Accessible",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6459,
+                "number": 3,
+                "passage": "<div class=\"alert alert-warning\"><p>Mr Okello's promotion means that ........................... will supervise a larger team</p>\n</div>",
+                "content": "Mr Okello's promotion means that ........................... will supervise a larger team",
+                "group": "part_5_3",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25034,
+                    "content": "he",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25039,
+                    "content": "his",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25045,
+                    "content": "him",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25050,
+                    "content": "himself",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6464,
+                "number": 4,
+                "passage": "<div class=\"alert alert-warning\"><p>Juniper Worldwide. Inc., will be..............................payroll service providers on January 1.</p>\n</div>",
+                "content": "Juniper Worldwide. Inc., will be..............................payroll service providers on January 1.",
+                "group": "part_5_4",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25055,
+                    "content": "changing",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25060,
+                    "content": "attending",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25065,
+                    "content": "holding",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25070,
+                    "content": "turning",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6470,
+                "number": 5,
+                "passage": "<div class=\"alert alert-warning\"><p>The Valletta Visitor Centre offers daily boat rides ......................... the city’s historic waterfront.</p>\n</div>",
+                "content": "The Valletta Visitor Centre offers daily boat rides ......................... the city’s historic waterfront.",
+                "group": "part_5_5",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25075,
+                    "content": "between",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25080,
+                    "content": "along",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25086,
+                    "content": "below",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25091,
+                    "content": "apart",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6476,
+                "number": 6,
+                "passage": "<div class=\"alert alert-warning\"><p>Ultrora Action’s T-Pro tennis shoe is the lightest ............................ on the market right now</p>\n</div>",
+                "content": "Ultrora Action’s T-Pro tennis shoe is the lightest ............................ on the market right now",
+                "group": "part_5_6",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25099,
+                    "content": "that",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25104,
+                    "content": "any",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25109,
+                    "content": "one",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25115,
+                    "content": "either",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6482,
+                "number": 7,
+                "passage": "<div class=\"alert alert-warning\"><p>Duram Biscuit Corp is able to ......................... good deals with its wholesale suppliers</p>\n</div>",
+                "content": "Duram Biscuit Corp is able to ......................... good deals with its wholesale suppliers",
+                "group": "part_5_7",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25123,
+                    "content": "negotiating",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25127,
+                    "content": "negotiates",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25133,
+                    "content": "negotiated",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25139,
+                    "content": "negotiate",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6488,
+                "number": 8,
+                "passage": "<div class=\"alert alert-warning\"><p>At Razam Marketing there are................................opportunities for professions' advancement</p>\n</div>",
+                "content": "At Razam Marketing there are................................opportunities for professions' advancement",
+                "group": "part_5_8",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25145,
+                    "content": "plenty",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25150,
+                    "content": "each",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25156,
+                    "content": "very",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25162,
+                    "content": "many",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6494,
+                "number": 9,
+                "passage": "<div class=\"alert alert-warning\"><p>Parking on Duhakno Street will be prohibited for the next few days ............................. emergency<br/>\nrepairs to water lines.</p>\n</div>",
+                "content": "Parking on Duhakno Street will be prohibited for the next few days ............................. emergency\nrepairs to water lines.",
+                "group": "part_5_9",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25169,
+                    "content": "so that",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25174,
+                    "content": "as a result",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25180,
+                    "content": "in order to",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25185,
+                    "content": "because of",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6500,
+                "number": 10,
+                "passage": "<div class=\"alert alert-warning\"><p>Accountants applying for the training must obtain a ........................... from their supervisor</p>\n</div>",
+                "content": "Accountants applying for the training must obtain a ........................... from their supervisor",
+                "group": "part_5_10",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25193,
+                    "content": "referring",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25198,
+                    "content": "referred",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25203,
+                    "content": "referral",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25209,
+                    "content": "refer",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6506,
+                "number": 11,
+                "passage": "<div class=\"alert alert-warning\"><p>The evaluation report will be completed ....................... after the auditors inspect the laboratory</p>\n</div>",
+                "content": "The evaluation report will be completed ....................... after the auditors inspect the laboratory",
+                "group": "part_5_11",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25217,
+                    "content": "when",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25221,
+                    "content": "only",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25227,
+                    "content": "still",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25233,
+                    "content": "most",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6512,
+                "number": 12,
+                "passage": "<div class=\"alert alert-warning\"><p>In light of our recent expansion, it will be ................................ to hire another administrative assistant by June 1.</p>\n</div>",
+                "content": "In light of our recent expansion, it will be ................................ to hire another administrative assistant by June 1.",
+                "group": "part_5_12",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25240,
+                    "content": "necessitating",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25245,
+                    "content": "necessary",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25251,
+                    "content": "necessarily",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25257,
+                    "content": "necessities",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6519,
+                "number": 13,
+                "passage": "<div class=\"alert alert-warning\"><p>Due to low registration, the communications workshop scheduled for July 2 will be postponed  .................................. further notice</p>\n</div>",
+                "content": "Due to low registration, the communications workshop scheduled for July 2 will be postponed  .................................. further notice",
+                "group": "part_5_13",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25264,
+                    "content": "until",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25269,
+                    "content": "onto",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25275,
+                    "content": "since",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25280,
+                    "content": "all",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6525,
+                "number": 14,
+                "passage": "<div class=\"alert alert-warning\"><p>The initial response to the beta version of the software allows us to be ........................ optimistic about future product sales.</p>\n</div>",
+                "content": "The initial response to the beta version of the software allows us to be ........................ optimistic about future product sales.",
+                "group": "part_5_14",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25288,
+                    "content": "fairness",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25293,
+                    "content": "fairest",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25298,
+                    "content": "fairly",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25304,
+                    "content": "fair",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6531,
+                "number": 15,
+                "passage": "<div class=\"alert alert-warning\"><p>Orvale School’s business mentors are retired executives with a .......................... of expertise<br/>\nacross a wide range of industries</p>\n</div>",
+                "content": "Orvale School’s business mentors are retired executives with a .......................... of expertise\nacross a wide range of industries",
+                "group": "part_5_15",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25312,
+                    "content": "wealth",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25316,
+                    "content": "height",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25322,
+                    "content": "labor",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25328,
+                    "content": "fame",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6537,
+                "number": 16,
+                "passage": "<div class=\"alert alert-warning\"><p>Thank you for your interest in our ......................... line of compact refrigerators</p>\n</div>",
+                "content": "Thank you for your interest in our ......................... line of compact refrigerators",
+                "group": "part_5_16",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25335,
+                    "content": "update",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25340,
+                    "content": "updated",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25346,
+                    "content": "updates",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25352,
+                    "content": "updating",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6543,
+                "number": 17,
+                "passage": "<div class=\"alert alert-warning\"><p>The judges may begin to review the entries ......................... the deadline for submitting slogans has passed</p>\n</div>",
+                "content": "The judges may begin to review the entries ......................... the deadline for submitting slogans has passed",
+                "group": "part_5_17",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25358,
+                    "content": "how",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25362,
+                    "content": "nor",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25367,
+                    "content": "now that",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25371,
+                    "content": "whether",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6548,
+                "number": 18,
+                "passage": "<div class=\"alert alert-warning\"><p>On his daily radio show. Trade Biz, Antonio Koslor ........................ business news from all over the globe.</p>\n</div>",
+                "content": "On his daily radio show. Trade Biz, Antonio Koslor ........................ business news from all over the globe.",
+                "group": "part_5_18",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25377,
+                    "content": "analysis",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25382,
+                    "content": "analyzer",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25385,
+                    "content": "analyzes",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25390,
+                    "content": "analyzing",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6553,
+                "number": 19,
+                "passage": "<div class=\"alert alert-warning\"><p>The purchase of The New Lagos Reporter will not lead to changes ......................editorial staff</p>\n</div>",
+                "content": "The purchase of The New Lagos Reporter will not lead to changes ......................editorial staff",
+                "group": "part_5_19",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25397,
+                    "content": "in",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25401,
+                    "content": "again",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25405,
+                    "content": "positions",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25410,
+                    "content": "ultimately",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6558,
+                "number": 20,
+                "passage": "<div class=\"alert alert-warning\"><p>Professor Reginald Layke’s proposal for an additional course in business management was<br/>\napproved in a ....................... short time</p>\n</div>",
+                "content": "Professor Reginald Layke’s proposal for an additional course in business management was\napproved in a ....................... short time",
+                "group": "part_5_20",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25416,
+                    "content": "surprised",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25421,
+                    "content": "surprise",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25425,
+                    "content": "surprisingly",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25430,
+                    "content": "surprising",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6563,
+                "number": 21,
+                "passage": "<div class=\"alert alert-warning\"><p>Caridell Science Museum trustees are expected to be ................of all the museum’s operations</p>\n</div>",
+                "content": "Caridell Science Museum trustees are expected to be ................of all the museum’s operations",
+                "group": "part_5_21",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25435,
+                    "content": "aware",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25439,
+                    "content": "current",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25442,
+                    "content": "serious",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25446,
+                    "content": "alert",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6567,
+                "number": 22,
+                "passage": "<div class=\"alert alert-warning\"><p>With the completion of its airport, Honokai Island's tourism ....................... has improved<br/>\ndramatically.</p>\n</div>",
+                "content": "With the completion of its airport, Honokai Island's tourism ....................... has improved\ndramatically.",
+                "group": "part_5_22",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25451,
+                    "content": "economical",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25455,
+                    "content": "economic",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25458,
+                    "content": "economize",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25462,
+                    "content": "economy",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6571,
+                "number": 23,
+                "passage": "<div class=\"alert alert-warning\"><p>Brocks Bistro has requested that we ......................... the number of dinner guests by Monday</p>\n</div>",
+                "content": "Brocks Bistro has requested that we ......................... the number of dinner guests by Monday",
+                "group": "part_5_23",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25467,
+                    "content": "personify",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25471,
+                    "content": "magnify",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25474,
+                    "content": "specify",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25478,
+                    "content": "testify",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6575,
+                "number": 24,
+                "passage": "<div class=\"alert alert-warning\"><p>Doi Textiles, Inc., is well-known ...................the fashion world as being a trendsetter for young<br/>\nwomen’s clothing.</p>\n</div>",
+                "content": "Doi Textiles, Inc., is well-known ...................the fashion world as being a trendsetter for young\nwomen’s clothing.",
+                "group": "part_5_24",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25483,
+                    "content": "toward",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25487,
+                    "content": "throughout",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25490,
+                    "content": "regarding",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25494,
+                    "content": "aboard",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6579,
+                "number": 25,
+                "passage": "<div class=\"alert alert-warning\"><p>To sign up for any class at Routen Academy, simply complete the online ..................... form at<br/>\nwww.routenacademy.edu.</p>\n</div>",
+                "content": "To sign up for any class at Routen Academy, simply complete the online ..................... form at\nwww.routenacademy.edu.",
+                "group": "part_5_25",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25499,
+                    "content": "enrollment",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25503,
+                    "content": "inventory",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25506,
+                    "content": "complaint",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25510,
+                    "content": "solicitation",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6583,
+                "number": 26,
+                "passage": "<div class=\"alert alert-warning\"><p>A reception will be held to introduce the newly ...................... director of marketing to the employees of Kaulana Industries.</p>\n</div>",
+                "content": "A reception will be held to introduce the newly ...................... director of marketing to the employees of Kaulana Industries.",
+                "group": "part_5_26",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25515,
+                    "content": "appoint",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25519,
+                    "content": "appoints",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25522,
+                    "content": "appointed",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25526,
+                    "content": "appointing",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6587,
+                "number": 27,
+                "passage": "<div class=\"alert alert-warning\"><p>To fill two vacant positions on its benefits committee, Adidion Labs ..................... employees who are ready for a challenge.</p>\n</div>",
+                "content": "To fill two vacant positions on its benefits committee, Adidion Labs ..................... employees who are ready for a challenge.",
+                "group": "part_5_27",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25531,
+                    "content": "seeking",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25535,
+                    "content": "is seeking",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25538,
+                    "content": "are sought",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25542,
+                    "content": "have been sought",
+                    "is_correct": false
+                  }
+                ]
+              },
+              {
+                "id": 6591,
+                "number": 28,
+                "passage": "<div class=\"alert alert-warning\"><p>The software for tracking orders has been ..................... successful as it has greatly decreased time spent on the task.</p>\n</div>",
+                "content": "The software for tracking orders has been ..................... successful as it has greatly decreased time spent on the task.",
+                "group": "part_5_28",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25547,
+                    "content": "haltingly",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25551,
+                    "content": "intimately",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25554,
+                    "content": "permissibly",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25558,
+                    "content": "markedly",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6595,
+                "number": 29,
+                "passage": "<div class=\"alert alert-warning\"><p>Lately the community sports program has had a surplus of volunteers, ....................... are students.</p>\n</div>",
+                "content": "Lately the community sports program has had a surplus of volunteers, ....................... are students.",
+                "group": "part_5_29",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25563,
+                    "content": "in as much as",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25567,
+                    "content": "the reason being",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25570,
+                    "content": "because of them",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25574,
+                    "content": "most of whom",
+                    "is_correct": true
+                  }
+                ]
+              },
+              {
+                "id": 6599,
+                "number": 30,
+                "passage": "<div class=\"alert alert-warning\"><p>Please use the attached survey to let us know how ......................... your recent stay at the Copper Mine Inn was.</p>\n</div>",
+                "content": "Please use the attached survey to let us know how ......................... your recent stay at the Copper Mine Inn was.",
+                "group": "part_5_30",
+                "type": null,
+                "audio_url": null,
+                "image_url": null,
+                "answers": [
+                  {
+                    "id": 25580,
+                    "content": "knowledgeable",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25584,
+                    "content": "considerable",
+                    "is_correct": false
+                  },
+                  {
+                    "id": 25587,
+                    "content": "enjoyable",
+                    "is_correct": true
+                  },
+                  {
+                    "id": 25591,
+                    "content": "available",
+                    "is_correct": false
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "part": null,
+  "partScores": []
+}

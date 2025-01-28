@@ -16,7 +16,7 @@ export class VerificationToken {
   verify_token: string;
 
   @Column({ type: 'timestamp' })
-  expires_at: Date;
+  expired_at: Date;
 
   @Column({ type: 'boolean', default: false })
   is_used: boolean;

@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshToken } from './refreshToken.entity';
+import { Token } from './token.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VerificationToken } from './verifycationToken.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(RefreshToken)
-    private readonly refreshTokenRepository: Repository<RefreshToken>,
-    @InjectRepository(VerificationToken)
-    private readonly verifyTokenRepository: Repository<VerificationToken>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
   ) {}
 
   createToken(payload: any, exp: string) {
@@ -27,7 +27,6 @@ export class TokenService {
       const decode = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET || 'secretkey',
       });
-      console.log('decodeee', decode);
       return decode;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -41,40 +40,56 @@ export class TokenService {
       return 'InvalidToken';
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async findToken(__token: string): Promise<RefreshToken | undefined> {
-    return;
+  async findToken(token: string, type: any): Promise<Token | undefined> {
+    const verificationToken = await this.tokenRepository.findOne({
+      where: { token: token, is_used: false, type: type },
+      relations: ['user'],
+    });
+    return verificationToken;
   }
-  async saveToken(refreshToken: Partial<RefreshToken>): Promise<RefreshToken> {
-    return this.refreshTokenRepository.save(refreshToken);
+  async saveToken(Token: Partial<Token>): Promise<Token> {
+    return this.tokenRepository.save(Token);
   }
 
   async checkRevokeToken(token: string): Promise<boolean> {
-    const refreshToken = await this.refreshTokenRepository.findOne({
+    const Token = await this.tokenRepository.findOne({
       where: { token },
     });
-    console.log('refreshtoken', refreshToken);
-    if (!refreshToken) {
+    if (!Token) {
       return true;
     }
-    return refreshToken.revoked;
+    return Token.is_used;
   }
 
   async revokeToken(token: string): Promise<void> {
-    const refreshToken = await this.refreshTokenRepository.findOne({
+    const Token = await this.tokenRepository.findOne({
       where: { token },
     });
-    if (refreshToken) {
-      refreshToken.revoked = true;
-      await this.refreshTokenRepository.save(refreshToken);
+    if (Token) {
+      Token.is_used = true;
+      await this.tokenRepository.save(Token);
     }
   }
 
   //################################# VerifyToken Repository ######################
 
-  async saveVerifyToken(
-    verifyToken: Partial<VerificationToken>,
-  ): Promise<VerificationToken> {
-    return this.verifyTokenRepository.save(verifyToken);
+  async findVerifyToken(token: string) {
+    const verificationToken = await this.tokenRepository.findOne({
+      where: { token: token, is_used: false },
+      relations: ['user'],
+    });
+
+    return verificationToken;
+  }
+  async saveVerifyToken(verifyToken: Partial<Token>): Promise<Token> {
+    return this.tokenRepository.save(verifyToken);
+  }
+
+  async checkAdmin(userName: string): Promise<boolean> {
+    const user = await this.usersService.findByUsername(userName);
+    if (user && user.role == 'admin') {
+      return true;
+    }
+    return false;
   }
 }
