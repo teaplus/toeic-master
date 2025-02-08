@@ -125,7 +125,7 @@ export class AuthService {
     const { username, password } = loginDto;
     const user = await this.usersService.validateUsername(username, password);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new NotFoundException('User or password wrong');
     }
     const payload = { username: user.username, sub: user.id };
     // const refreshToken = await this.createToken(
@@ -172,7 +172,8 @@ export class AuthService {
       type: 'verificationToken',
       expired_at: expiresAt,
     });
-    const verificationLink = `http://localhost:4000/verification/${token}`;
+    const frontendUrl = process.env.FRONTEND_URL;
+    const verificationLink = `${frontendUrl}/verification/${token}`;
     const emailContent = verifyEmailTemplate(user.username, verificationLink);
     await this.mailService.sendEmail(
       user.email,
@@ -216,7 +217,8 @@ export class AuthService {
       type: 'verificationToken',
       expired_at: expiresAt,
     });
-    const verificationLink = `http://localhost:4000/verification/${token}`;
+    const frontendUrl = process.env.FRONTEND_URL;
+    const verificationLink = `${frontendUrl}/verification/${token}`;
     const emailContent = verifyEmailTemplate(user.username, verificationLink);
     await this.mailService.sendEmail(
       user.email,
@@ -262,7 +264,8 @@ export class AuthService {
       type: 'verificationToken',
       expired_at: expiresAt,
     });
-    const verificationLink = `http://localhost:4000/reset-password/${user.email}/${token}`;
+    const frontendUrl = process.env.FRONTEND_URL;
+    const verificationLink = `${frontendUrl}/reset-password/${user.email}/${token}`;
 
     const emailContent = forgotPasswordTemplateWithCode(
       user.username,

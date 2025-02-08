@@ -8,6 +8,7 @@ import {
   TestSessionStatus,
 } from 'src/test/entities/test-session.entity';
 import { UserWithStats } from './dto/profile.dto';
+import { TestType } from 'src/test/entities/test.entity';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,7 @@ export class UsersService {
   ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
+    console.log('email', email);
     return this.userRepository.findOne({ where: { email } });
   }
 
@@ -226,6 +228,15 @@ export class UsersService {
     return result;
   }
 
+  async sanitizeUserByAdmin(user: User): Promise<Partial<User>> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
+  }
+  public async createUserByAdmin(user: Partial<User>) {
+    return this.userRepository.save(user);
+  }
+
   async getUserStats(userId: number): Promise<{
     analysisScores: {
       listening: number;
@@ -301,5 +312,218 @@ export class UsersService {
     // console.log('scores', scores);
 
     return { analysisScores: scores };
+  }
+
+  async getUserTestHistory(
+    userId: number,
+    page: number = 1,
+    limit: number = 10,
+    status: TestSessionStatus,
+  ): Promise<{
+    data: TestSession[];
+    total: number;
+    page: number;
+    pages: number;
+  }> {
+    // Convert to numbers
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+
+    const [data, total] = await this.testSessionRepository.findAndCount({
+      where: {
+        user: { id: userId },
+        status: status,
+      },
+      relations: ['test', 'partScores'],
+      skip: (pageNum - 1) * limitNum,
+      take: limitNum,
+      order: { completedAt: 'DESC' },
+    });
+
+    return {
+      data,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+    };
+  }
+  //lấy 10 bài test gần nhất.
+  async analyzePartScores(userId: number) {
+    // Get 10 most recent completed test sessions for the user
+    const testSessions = await this.testSessionRepository.find({
+      where: {
+        user: { id: userId },
+        status: TestSessionStatus.COMPLETED,
+      },
+      relations: ['partScores'],
+      order: {
+        completedAt: 'DESC',
+      },
+      take: 10,
+    });
+
+    // Initialize part score tracking
+    const partScores = {
+      part1: { total: 0, count: 0, maxScore: 6 },
+      part2: { total: 0, count: 0, maxScore: 25 },
+      part3: { total: 0, count: 0, maxScore: 39 },
+      part4: { total: 0, count: 0, maxScore: 30 },
+      part5: { total: 0, count: 0, maxScore: 30 },
+      part6: { total: 0, count: 0, maxScore: 16 },
+      part7: { total: 0, count: 0, maxScore: 54 },
+    };
+
+    // Aggregate scores for each part
+    testSessions.forEach((session) => {
+      console.log('session', session);
+      if (session.partScores) {
+        session.partScores.forEach((score) => {
+          const partKey = `part${score.partNumber}` as keyof typeof partScores;
+          partScores[partKey].total += score.score;
+          partScores[partKey].count++;
+        });
+      }
+    });
+
+    // Calculate averages as percentages
+    const averages = {
+      part1:
+        partScores.part1.count > 0
+          ? Math.round(
+              (partScores.part1.total /
+                (partScores.part1.count * partScores.part1.maxScore)) *
+                100,
+            )
+          : 0,
+      part2:
+        partScores.part2.count > 0
+          ? Math.round(
+              (partScores.part2.total /
+                (partScores.part2.count * partScores.part2.maxScore)) *
+                100,
+            )
+          : 0,
+      part3:
+        partScores.part3.count > 0
+          ? Math.round(
+              (partScores.part3.total /
+                (partScores.part3.count * partScores.part3.maxScore)) *
+                100,
+            )
+          : 0,
+      part4:
+        partScores.part4.count > 0
+          ? Math.round(
+              (partScores.part4.total /
+                (partScores.part4.count * partScores.part4.maxScore)) *
+                100,
+            )
+          : 0,
+      part5:
+        partScores.part5.count > 0
+          ? Math.round(
+              (partScores.part5.total /
+                (partScores.part5.count * partScores.part5.maxScore)) *
+                100,
+            )
+          : 0,
+      part6:
+        partScores.part6.count > 0
+          ? Math.round(
+              (partScores.part6.total /
+                (partScores.part6.count * partScores.part6.maxScore)) *
+                100,
+            )
+          : 0,
+      part7:
+        partScores.part7.count > 0
+          ? Math.round(
+              (partScores.part7.total /
+                (partScores.part7.count * partScores.part7.maxScore)) *
+                100,
+            )
+          : 0,
+    };
+
+    return {
+      partAverages: averages,
+      totalTests: testSessions.length,
+    };
+  }
+
+  async getLeaderboard() {
+    // Top 5 users có điểm cao nhất (mỗi user chỉ lấy điểm cao nhất)
+    const topScorers = await this.testSessionRepository
+      .createQueryBuilder('test_session')
+      .select([
+        'DISTINCT ON (user.id) user.id as userId',
+        'user.fullName as fullName',
+        'user.avatar as avatar',
+        'test_session.total_score as highestScore',
+        'test.name as testName',
+        'test_session.completedAt as achievedAt',
+      ])
+      .leftJoin('test_session.user', 'user')
+      .leftJoin('test_session.test', 'test')
+      .where('test_session.status = :status', {
+        status: TestSessionStatus.COMPLETED,
+      })
+      .andWhere('test.type IN (:...types)', {
+        types: [TestType.MINI_TEST, TestType.FULL_TEST],
+      })
+      .orderBy('user.id')
+      .addOrderBy('test_session.total_score', 'DESC')
+      .limit(5)
+      .getRawMany();
+
+    // Top 5 users hoạt động nhiều nhất (không thay đổi)
+    const mostActive = await this.testSessionRepository
+      .createQueryBuilder('test_session')
+      .select([
+        'user.id as userId',
+        'user.fullName as fullName',
+        'user.avatar as avatar',
+        'COUNT(DISTINCT test_session.id) as totalTests',
+        'AVG(test_session.total_score) as averageScore',
+        'MAX(test_session.total_score) as highestScore',
+      ])
+      .leftJoin('test_session.user', 'user')
+      .leftJoin('test_session.test', 'test')
+      .where('test_session.status = :status', {
+        status: TestSessionStatus.COMPLETED,
+      })
+      .andWhere('test.type IN (:...types)', {
+        types: [TestType.MINI_TEST, TestType.FULL_TEST],
+      })
+      .groupBy('user.id')
+      .addGroupBy('user.fullName')
+      .addGroupBy('user.avatar')
+      .orderBy('totalTests', 'DESC')
+      .limit(5)
+      .getRawMany();
+
+    // Sort topScorers by highestScore after getting distinct users
+    const sortedTopScorers = topScorers
+      .sort((a, b) => b.highestscore - a.highestscore)
+      .slice(0, 5);
+
+    return {
+      topScorers: sortedTopScorers.map((user) => ({
+        userId: user.userid,
+        fullName: user.fullname,
+        avatar: user.avatar,
+        highestScore: Math.round(user.highestscore),
+        testName: user.testname,
+        achievedAt: user.achievedat,
+      })),
+      mostActive: mostActive.map((user) => ({
+        userId: user.userid,
+        fullName: user.fullname,
+        avatar: user.avatar,
+        totalTests: parseInt(user.totaltests),
+        averageScore: Math.round(user.averagescore),
+        highestScore: Math.round(user.highestscore),
+      })),
+    };
   }
 }

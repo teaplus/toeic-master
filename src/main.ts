@@ -10,8 +10,8 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.enableCors({
-    origin: ['http://localhost:4000'], // Địa chỉ frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Phương thức được phép
+    origin: [process.env.FRONTEND_URL], // Địa chỉ frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Phương thức được phép
     allowedHeaders: ['Origin', 'Content-Type', 'Authorization'], // Các header được phép
     credentials: true, // Để gửi cookie khi gọi API
   });

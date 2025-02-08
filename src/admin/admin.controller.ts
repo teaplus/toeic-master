@@ -9,11 +9,17 @@ import {
   UseGuards,
   HttpCode,
   ParseIntPipe,
+  Post,
+  Res,
+  Header,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { RoleAdminCheck } from 'src/auth/guards/admin.guard';
 import { UserQueryDto } from './dto/user-query.dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
+// import { CreateUserByAdminDto } from './dto/create-user.dto';
+import { StatsPeriod } from './dto/stats.enum';
+import { Response } from 'express';
 
 @Controller('admin')
 @UseGuards(RoleAdminCheck)
@@ -72,5 +78,30 @@ export class AdminController {
     );
   }
 
-  // Để thêm các routes admin khác sau này
+  @Post('create-user')
+  async createUser(@Body() createUserDto: any) {
+    console.log('createUserDto', createUserDto);
+    return this.adminService.createUser(createUserDto);
+  }
+
+  @Get('stats/:period')
+  async getStatsByPeriod(
+    @Param('period') period: StatsPeriod,
+    @Query('year') year?: number,
+  ) {
+    return this.adminService.getStatsByPeriod(period, year);
+  }
+
+  @Get('export-csv/:type')
+  @Header('Content-Type', 'text/csv')
+  async exportCsv(
+    @Param('type') type: 'users' | 'tests',
+    @Res() res: Response,
+  ) {
+    const { filename, stream } = await this.adminService.generateCsvFile(type);
+
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+    stream.pipe(res);
+  }
 }

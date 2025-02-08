@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { TestSession } from 'src/test/entities/test-session.entity';
 import { Test, TestType } from 'src/test/entities/test.entity';
@@ -10,6 +14,22 @@ import { DailyStat } from 'src/admin/entities/daily-stat.entity';
 import { Between } from 'typeorm';
 import { Cron } from '@nestjs/schedule';
 import { UsersService } from 'src/users/users.service';
+import { CreateUserByAdminDto } from './dto/create-user.dto';
+import { StatsPeriod } from './dto/stats.enum';
+import { Readable } from 'stream';
+import { format } from 'date-fns';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface ScoreDistribution {
+  range: string;
+  count: number;
+  percentage: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface CsvRow {
+  [key: string]: string | number;
+}
 
 @Injectable()
 export class AdminService {
@@ -31,11 +51,18 @@ export class AdminService {
     limit: number = 10,
     search?: string,
   ): Promise<{ users: Partial<User>[]; total: number; totalPages: number }> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(
+        'user.testSessions',
+        'testSession',
+        'testSession.status = :status',
+        { status: TestSessionStatus.COMPLETED },
+      );
 
     if (search) {
       queryBuilder.where(
-        'LOWER(user.email) LIKE LOWER(:search) OR LOWER("fullName") LIKE LOWER(:search)',
+        'LOWER(user.email) LIKE LOWER(:search) OR LOWER(user.fullName) LIKE LOWER(:search)',
         { search: `%${search}%` },
       );
     }
@@ -47,8 +74,30 @@ export class AdminService {
       .take(limit)
       .getManyAndCount();
 
+    const enrichedUsers = users.map((user) => {
+      const completedTests = user.testSessions || [];
+      const latestTest =
+        completedTests.length > 0
+          ? completedTests.reduce((latest, current) =>
+              latest.completedAt > current.completedAt ? latest : current,
+            )
+          : null;
+
+      const highestScore =
+        completedTests.length > 0
+          ? Math.max(...completedTests.map((test) => test.total_score || 0))
+          : 0;
+
+      return {
+        ...this.sanitizeUser(user),
+        latestTestDate: latestTest?.completedAt || null,
+        latestTestScore: latestTest?.total_score || 0,
+        highestScore: highestScore,
+      };
+    });
+
     return {
-      users: users.map((user) => this.sanitizeUser(user)),
+      users: enrichedUsers,
       total,
       totalPages: Math.ceil(total / limit),
     };
@@ -59,7 +108,6 @@ export class AdminService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     user.is_activated = isActive;
     return this.userRepository.save(user);
   }
@@ -75,45 +123,38 @@ export class AdminService {
 
   private sanitizeUser(user: User): Partial<User> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
+    const { password, testSessions, ...result } = user;
     return result;
   }
 
   async getDashboardStats() {
-    // Lấy ngày hôm nay (bắt đầu từ 00:00:00)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Kiểm tra xem đã có thống kê của ngày hôm nay chưa
-    const todayStats = await this.dailyStatRepository.findOne({
-      where: { date: today },
-    });
-
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
+
+    // Tính toán các mốc thời gian
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay()); // Đầu tuần (Chủ nhật)
+
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const quarterStart = new Date(
+      today.getFullYear(),
+      Math.floor(today.getMonth() / 3) * 3,
+      1,
+    );
+
+    const yearStart = new Date(today.getFullYear(), 0, 1);
+
+    // Lấy thống kê của ngày hôm qua từ database
     const yesterdayStats = await this.dailyStatRepository.findOne({
       where: { date: yesterday },
     });
 
-    console.log('yesterdayStats', yesterdayStats);
-
-    // Nếu đã có thống kê hôm nay, trả về luôn
-    if (todayStats) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const topScorer = todayStats.topScorerId
-        ? await this.userRepository.findOne({
-            where: { id: todayStats.topScorerId },
-          })
-        : null;
-
-      return {
-        todayStats,
-        yesterdayStats,
-      };
-    }
-
-    // Nếu chưa có, tính toán thống kê mới
-    const [totalUsers, newUsersToday] = await Promise.all([
+    // Luôn tính toán realtime cho ngày hôm nay
+    const [totalSystemUsers, newUsersToday] = await Promise.all([
       this.userRepository.count(),
       this.userRepository.count({
         where: {
@@ -122,68 +163,188 @@ export class AdminService {
       }),
     ]);
 
-    const testStats = await this.testSessionRepository
-      .createQueryBuilder('test_session')
-      .leftJoin('test_session.test', 'test')
-      .select([
-        'COUNT(DISTINCT test_session.id) as completedTests',
-        'AVG(test_session.total_score) as averageScore',
-        'test.type as testType',
-      ])
-      .where('test_session.status = :status', {
-        status: TestSessionStatus.COMPLETED,
-      })
-      .andWhere('test.type IN (:...types)', {
-        types: [TestType.MINI_TEST, TestType.FULL_TEST],
-      })
-      .groupBy('test.type')
-      .getRawOne();
+    // Lấy thống kê bài test hoàn thành theo các khoảng thời gian
+    const [todayStats, weeklyStats, monthlyStats, quarterlyStats, yearlyStats] =
+      await Promise.all([
+        // Today stats
+        this.testSessionRepository
+          .createQueryBuilder('test_session')
+          .leftJoin('test_session.test', 'test')
+          .select([
+            'COUNT(DISTINCT test_session.id) as completedTests',
+            'AVG(test_session.total_score) as averageScore',
+          ])
+          .where('test_session.status = :status', {
+            status: TestSessionStatus.COMPLETED,
+          })
+          .andWhere('test_session.completedAt >= :today', { today })
+          .andWhere('test.type IN (:...types)', {
+            types: [TestType.MINI_TEST, TestType.FULL_TEST],
+          })
+          .getRawOne(),
 
-    const topScorer = await this.testSessionRepository
+        // Weekly stats
+        this.testSessionRepository.count({
+          where: {
+            status: TestSessionStatus.COMPLETED,
+            completedAt: MoreThanOrEqual(weekStart),
+          },
+        }),
+
+        // Monthly stats
+        this.testSessionRepository.count({
+          where: {
+            status: TestSessionStatus.COMPLETED,
+            completedAt: MoreThanOrEqual(monthStart),
+          },
+        }),
+
+        // Quarterly stats
+        this.testSessionRepository.count({
+          where: {
+            status: TestSessionStatus.COMPLETED,
+            completedAt: MoreThanOrEqual(quarterStart),
+          },
+        }),
+
+        // Yearly stats
+        this.testSessionRepository.count({
+          where: {
+            status: TestSessionStatus.COMPLETED,
+            completedAt: MoreThanOrEqual(yearStart),
+          },
+        }),
+      ]);
+
+    // Lấy người có điểm cao nhất mọi thời điểm
+    const allTimeTopScorer = await this.testSessionRepository
       .createQueryBuilder('test_session')
       .select([
         'user.id as userId',
         'user.fullName as fullName',
         'user.email as email',
-        'MAX(test_session.total_score) as highestScore',
+        'test_session.total_score as highestScore',
         'test.name as testName',
+        'test_session.completedAt as completedAt',
       ])
       .leftJoin('test_session.user', 'user')
       .leftJoin('test_session.test', 'test')
       .where('test_session.status = :status', {
         status: TestSessionStatus.COMPLETED,
       })
-      .groupBy('user.id')
-      .addGroupBy('test.name')
-      .orderBy('highestScore', 'DESC')
+      .orderBy('test_session.total_score', 'DESC')
       .limit(1)
       .getRawOne();
-    // Lưu thống kê mới vào database
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const newStats = await this.dailyStatRepository.save({
-      date: today,
-      totalUsers,
-      newUsers: newUsersToday,
-      completedTests: parseInt(testStats.completedtests) || 0,
-      averageScore: Math.round(testStats.averagescore) || 0,
-      topScorerId: topScorer?.userid,
-      topScore: Math.round(topScorer?.highestscore) || 0,
+
+    // Lấy điểm cao nhất của mỗi user và phân tích phân bổ
+    const userHighestScores = await this.testSessionRepository
+      .createQueryBuilder('test_session')
+      .select([
+        'user.id as userId',
+        'MAX(test_session.total_score) as highestScore',
+      ])
+      .leftJoin('test_session.user', 'user')
+      .where('test_session.status = :status', {
+        status: TestSessionStatus.COMPLETED,
+      })
+      .groupBy('user.id')
+      .getRawMany();
+
+    const scoreRanges = [
+      { min: 0, max: 250, label: '0-250' },
+      { min: 251, max: 550, label: '251-550' },
+      { min: 551, max: 750, label: '551-750' },
+      { min: 751, max: 990, label: '751-990' },
+    ];
+
+    const distribution = scoreRanges.map((range) => ({
+      range: range.label,
+      count: userHighestScores.filter(
+        (score) =>
+          score.highestscore >= range.min && score.highestscore <= range.max,
+      ).length,
+      percentage: 0,
+    }));
+
+    const totalScoredUsers = userHighestScores.length;
+    distribution.forEach((item) => {
+      item.percentage =
+        totalScoredUsers > 0
+          ? Math.round((item.count / totalScoredUsers) * 100)
+          : 0;
     });
 
-    return {
-      totalUsers,
-      newUsersToday,
-      completedTests: parseInt(testStats.completedtests) || 0,
-      averageScore: Math.round(testStats.averagescore) || 0,
-      topScorer: topScorer
+    console.log('allTimeTopScorer', allTimeTopScorer);
+    console.log('todayStats', todayStats);
+
+    // Lấy top 5 bài test phổ biến nhất
+    const popularTests = await this.testSessionRepository
+      .createQueryBuilder('test_session')
+      .select([
+        'test.id as testId',
+        'test.name as testName',
+        'test.type as testType',
+        'test.total_score as maxScore',
+        'COUNT(DISTINCT test_session.id) as totalAttempts',
+        'AVG(test_session.total_score) as averageScore',
+        'MAX(test_session.total_score) as highestScore',
+      ])
+      .leftJoin('test_session.test', 'test')
+      .where('test_session.status = :status', {
+        status: TestSessionStatus.COMPLETED,
+      })
+      .andWhere('test.type IN (:...types)', {
+        types: [TestType.MINI_TEST, TestType.FULL_TEST, TestType.PART_TEST],
+      })
+      .groupBy('test.id')
+      .addGroupBy('test.name')
+      .addGroupBy('test.type')
+      .addGroupBy('test.total_score')
+      .orderBy('totalAttempts', 'DESC')
+      .limit(5)
+      .getRawMany();
+
+    const formattedPopularTests = popularTests.map((test) => ({
+      id: test.testid,
+      name: test.testname,
+      type: test.testtype,
+      maxScore: test.maxscore || 990,
+      totalAttempts: parseInt(test.totalattempts),
+      averageScore: Math.round(test.averagescore) || 0,
+      highestScore: Math.round(test.highestscore) || 0,
+    }));
+
+    const todayStatsData = {
+      date: today,
+      totalUsers: totalSystemUsers,
+      newUsers: newUsersToday,
+      completedTests: parseInt(todayStats?.completedtests) || 0,
+      averageScore: Math.round(todayStats?.averagescore) || 0,
+      topScorerId: allTimeTopScorer?.userid,
+      topScore: Math.round(allTimeTopScorer?.highestscore) || 0,
+      topScorer: allTimeTopScorer
         ? {
-            userId: topScorer.userid,
-            fullName: topScorer.fullname,
-            email: topScorer.email,
-            highestScore: Math.round(topScorer.highestscore),
-            testName: topScorer.testname,
+            userId: allTimeTopScorer.userid,
+            fullName: allTimeTopScorer.fullname,
+            email: allTimeTopScorer.email,
+            highestScore: Math.round(allTimeTopScorer.highestscore),
+            testName: allTimeTopScorer.testname,
+            achievedAt: allTimeTopScorer.completedat,
           }
         : null,
+      completedTestsStats: {
+        weekly: weeklyStats,
+        monthly: monthlyStats,
+        quarterly: quarterlyStats,
+        yearly: yearlyStats,
+      },
+      scoreDistribution: distribution,
+      popularTests: formattedPopularTests,
+    };
+
+    return {
+      todayStats: todayStatsData,
+      yesterdayStats,
     };
   }
 
@@ -242,6 +403,14 @@ export class AdminService {
 
   async getUserProgressDetails(userId: number) {
     // Get all completed test sessions for user
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userInfo } = user;
+
     const testSessions = await this.testSessionRepository
       .createQueryBuilder('test_session')
       .select([
@@ -259,8 +428,12 @@ export class AdminService {
       .andWhere('test_session.status = :status', {
         status: TestSessionStatus.COMPLETED,
       })
+      .andWhere('test.type != :type', { type: TestType.PART_TEST })
       .orderBy('test_session.completed_at', 'DESC')
+      .limit(15)
       .getRawMany();
+
+    console.log('testSessions', testSessions);
 
     // Calculate overview stats
     const userStatsOverview = await this.testSessionRepository
@@ -277,7 +450,6 @@ export class AdminService {
         status: TestSessionStatus.COMPLETED,
       })
       .getRawOne();
-
     // Get total test sessions count
     const totalSessions = await this.testSessionRepository
       .createQueryBuilder('test_session')
@@ -302,26 +474,9 @@ export class AdminService {
       })
       .getCount();
 
-    // Group test sessions by type
-    const sessionsByType = testSessions.reduce((acc, session) => {
-      const type = session.test_type;
-      if (!acc[type]) {
-        acc[type] = [];
-      }
-      acc[type].push({
-        id: session.test_session_id,
-        testId: session.test_id,
-        testName: session.test_name,
-        completedAt: session.test_session_completed_at,
-        totalScore: session.test_session_total_score,
-        listeningScore: session.test_session_listening_score,
-        readingScore: session.test_session_reading_score,
-      });
-      return acc;
-    }, {});
-
     const userStats = await this.usersService.getUserStats(userId);
     return {
+      user: userInfo,
       overview: {
         totalTests: userStatsOverview.totalTests,
         averageScore: Math.round(userStatsOverview.averagescore || 0),
@@ -332,7 +487,7 @@ export class AdminService {
         inProgressSessions,
         completedSessions,
       },
-      testSessions: sessionsByType,
+      testSessions: testSessions,
       stats: userStats,
     };
   }
@@ -347,12 +502,12 @@ export class AdminService {
     // Lưu vào bảng daily_stats
     await this.dailyStatRepository.save({
       date: today,
-      totalUsers: stats.totalUsers,
-      newUsers: stats.newUsersToday,
-      completedTests: stats.completedTests,
-      averageScore: stats.averageScore,
-      topScorerId: stats.topScorer?.userId,
-      topScore: stats.topScorer?.highestScore,
+      totalUsers: stats.todayStats.totalUsers,
+      newUsers: stats.todayStats.newUsers,
+      completedTests: stats.todayStats.completedTests,
+      averageScore: stats.todayStats.averageScore,
+      topScorerId: stats.todayStats.topScorerId,
+      topScore: stats.todayStats.topScore,
     });
   }
 
@@ -368,8 +523,257 @@ export class AdminService {
     });
   }
 
-  @Cron('0 0 * * *') // Chạy lúc 00:00 mỗi ngày
-  async handleDailyStats() {
-    await this.updateDailyStats();
+  @Cron('59 23 * * *') // Chạy lúc 23:59 mỗi ngày
+  async saveDailyStats() {
+    const stats = await this.getDashboardStats();
+
+    // Lưu thống kê của ngày hôm nay vào database
+    await this.dailyStatRepository.save({
+      date: stats.todayStats.date,
+      totalUsers: stats.todayStats.totalUsers,
+      newUsers: stats.todayStats.newUsers,
+      completedTests: stats.todayStats.completedTests,
+      averageScore: stats.todayStats.averageScore,
+      topScorerId: stats.todayStats.topScorerId,
+      topScore: stats.todayStats.topScore,
+    });
+  }
+
+  async createUser(
+    createUserDto: CreateUserByAdminDto,
+  ): Promise<Partial<User>> {
+    // Kiểm tra email đã tồn tại
+    const existingUser = await this.usersService.findByEmail(
+      createUserDto.email,
+    );
+    console.log('existingUser', existingUser);
+    if (existingUser) {
+      throw new BadRequestException('Email already exists');
+    }
+
+    // Tạo user mới với trạng thái đã active
+    const newUser = await this.usersService.create({
+      ...createUserDto,
+      is_activated: true, // User được tạo bởi admin mặc định đã active
+      role: 'common',
+    });
+
+    return this.usersService.sanitizeUserByAdmin(newUser);
+  }
+
+  async getStatsByPeriod(
+    period: StatsPeriod,
+    year: number = new Date().getFullYear(),
+  ) {
+    const queryBuilder = this.testSessionRepository
+      .createQueryBuilder('test_session')
+      .where('test_session.status = :status', {
+        status: TestSessionStatus.COMPLETED,
+      });
+
+    switch (period) {
+      case StatsPeriod.WEEK:
+        return this.getWeeklyStats(queryBuilder, year);
+      case StatsPeriod.MONTH:
+        return this.getMonthlyStats(queryBuilder, year);
+      case StatsPeriod.QUARTER:
+        return this.getQuarterlyStats(queryBuilder, year);
+      case StatsPeriod.YEAR:
+        return this.getYearlyStats(queryBuilder);
+    }
+  }
+
+  private async getWeeklyStats(
+    queryBuilder: SelectQueryBuilder<TestSession>,
+    year: number,
+  ) {
+    const stats = await queryBuilder
+      .select([
+        'EXTRACT(WEEK FROM test_session.completedAt) as week',
+        'COUNT(test_session.id) as total',
+        'AVG(test_session.total_score) as averageScore',
+      ])
+      .andWhere('EXTRACT(YEAR FROM test_session.completedAt) = :year', { year })
+      .groupBy('week')
+      .orderBy('week', 'ASC')
+      .getRawMany();
+
+    return stats.map((stat) => ({
+      period: `Week ${stat.week}`,
+      total: parseInt(stat.total),
+      averageScore: Math.round(stat.averagescore),
+    }));
+  }
+
+  private async getMonthlyStats(
+    queryBuilder: SelectQueryBuilder<TestSession>,
+    year: number,
+  ) {
+    const stats = await queryBuilder
+      .select([
+        'EXTRACT(MONTH FROM test_session.completedAt) as month',
+        'COUNT(test_session.id) as total',
+        'AVG(test_session.total_score) as averageScore',
+      ])
+      .andWhere('EXTRACT(YEAR FROM test_session.completedAt) = :year', { year })
+      .groupBy('month')
+      .orderBy('month', 'ASC')
+      .getRawMany();
+
+    return stats.map((stat) => ({
+      period: `Month ${stat.month}`,
+      total: parseInt(stat.total),
+      averageScore: Math.round(stat.averagescore),
+    }));
+  }
+
+  private async getQuarterlyStats(
+    queryBuilder: SelectQueryBuilder<TestSession>,
+    year: number,
+  ) {
+    const stats = await queryBuilder
+      .select([
+        'EXTRACT(QUARTER FROM test_session.completedAt) as quarter',
+        'COUNT(test_session.id) as total',
+        'AVG(test_session.total_score) as averageScore',
+      ])
+      .andWhere('EXTRACT(YEAR FROM test_session.completedAt) = :year', { year })
+      .groupBy('quarter')
+      .orderBy('quarter', 'ASC')
+      .getRawMany();
+
+    return stats.map((stat) => ({
+      period: `Q${stat.quarter}`,
+      total: parseInt(stat.total),
+      averageScore: Math.round(stat.averagescore),
+    }));
+  }
+
+  private async getYearlyStats(queryBuilder: SelectQueryBuilder<TestSession>) {
+    const stats = await queryBuilder
+      .select([
+        'EXTRACT(YEAR FROM test_session.completedAt) as year',
+        'COUNT(test_session.id) as total',
+        'AVG(test_session.total_score) as averageScore',
+      ])
+      .groupBy('year')
+      .orderBy('year', 'ASC')
+      .getRawMany();
+
+    return stats.map((stat) => ({
+      period: `Year ${stat.year}`,
+      total: parseInt(stat.total),
+      averageScore: Math.round(stat.averagescore),
+    }));
+  }
+
+  async generateCsvFile(
+    type: 'users' | 'tests',
+  ): Promise<{ filename: string; stream: Readable }> {
+    // Lấy dữ liệu từ query trực tiếp thay vì dùng getList
+    const data =
+      type === 'users'
+        ? await this.userRepository
+            .createQueryBuilder('user')
+            .select([
+              'user.id as id',
+              'user.fullName as fullName',
+              'user.email as email',
+              'user.created_at as registrationDate',
+              'COUNT(DISTINCT test_session.id) as totalTests',
+              'AVG(test_session.total_score) as averageScore',
+            ])
+            .leftJoin('user.testSessions', 'test_session')
+            .groupBy('user.id')
+            .getRawMany()
+        : await this.testRepository
+            .createQueryBuilder('test')
+            .select([
+              'test.id as id',
+              'test.name as title',
+              'test.type as type',
+              'COUNT(DISTINCT test_session.id) as totalAttempts',
+              'AVG(test_session.total_score) as averageScore',
+            ])
+            .leftJoin('test.testSessions', 'test_session')
+            .groupBy('test.id')
+            .getRawMany();
+
+    // Định nghĩa headers cho từng loại
+    const headers =
+      type === 'users'
+        ? [
+            'ID',
+            'Full Name',
+            'Email',
+            'Registration Date',
+            'Total Tests',
+            'Average Score',
+          ]
+        : ['ID', 'Title', 'Type', 'Total Attempts', 'Average Score'];
+
+    const fields =
+      type === 'users'
+        ? [
+            'id',
+            'fullName',
+            'email',
+            'registrationDate',
+            'totalTests',
+            'averageScore',
+          ]
+        : ['id', 'title', 'type', 'totalattempts', 'averagescore'];
+
+    // Tạo stream để ghi dữ liệu
+    const stream = new Readable({
+      read() {
+        // Implementation required but not used
+      },
+    });
+
+    // Ghi header
+    stream.push(headers.join(',') + '\n');
+
+    // Ghi dữ liệu
+    data.forEach((item: any) => {
+      const row = fields
+        .map((field) => {
+          let value = item[field];
+
+          // Format date với kiểm tra
+          if (field === 'registrationDate' && value) {
+            try {
+              const date = new Date(value);
+              if (date.toString() !== 'Invalid Date') {
+                value = format(date, 'dd/MM/yyyy HH:mm:ss');
+              }
+            } catch {
+              value = ''; // hoặc giá trị mặc định khác
+            }
+          }
+
+          // Xử lý các giá trị có dấu phẩy
+          if (typeof value === 'string' && value.includes(',')) {
+            value = `"${value}"`;
+          }
+
+          return value || ''; // Trả về chuỗi rỗng nếu value là null/undefined
+        })
+        .join(',');
+
+      stream.push(row + '\n');
+    });
+
+    // Kết thúc stream
+    stream.push(null);
+
+    // Tạo tên file với timestamp
+    const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+    const filename = `${type}_report_${timestamp}.csv`;
+
+    return {
+      filename,
+      stream,
+    };
   }
 }
