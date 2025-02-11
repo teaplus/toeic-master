@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies including devDependencies
+# Install dependencies
 RUN npm install
 
 # Copy source code
@@ -25,11 +25,12 @@ WORKDIR /usr/src/app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
+# Install production dependencies
 RUN npm ci --only=production
 
 # Copy built files from development stage
 COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/node_modules ./node_modules
 
 # Expose port
 EXPOSE 3000
@@ -38,4 +39,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start application
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
