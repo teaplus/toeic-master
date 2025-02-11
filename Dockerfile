@@ -1,23 +1,41 @@
-# Bắt đầu từ một image Node.js chính thức
-FROM node:18-alpine
+# Stage 1: Development
+FROM node:20-alpine AS development
 
-# Thiết lập thư mục làm việc trong container
+# Create app directory
 WORKDIR /usr/src/app
 
-# Sao chép package.json và package-lock.json vào container
+# Copy package files
 COPY package*.json ./
 
-# Cài đặt các phụ thuộc của dự án
-RUN npm install --production
+# Install dependencies including devDependencies
+RUN npm install
 
-# Sao chép toàn bộ mã nguồn vào container
+# Copy source code
 COPY . .
 
-# Build ứng dụng NestJS (nếu sử dụng TypeScript)
+# Build app
 RUN npm run build
 
-# Chạy ứng dụng trong container (cấu hình default cho NestJS)
-CMD ["npm", "run", "start:prod"]
+# Stage 2: Production
+FROM node:20-alpine AS production
 
-# Mở cổng mà ứng dụng NestJS đang chạy (mặc định là 3000)
+# Create app directory
+WORKDIR /usr/src/app
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy built files from development stage
+COPY --from=development /usr/src/app/dist ./dist
+
+# Expose port
 EXPOSE 3000
+
+# Set NODE_ENV
+ENV NODE_ENV=production
+
+# Start application
+CMD ["npm", "run", "start:prod"]

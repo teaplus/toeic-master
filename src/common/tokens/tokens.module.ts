@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TokenService } from './token.services';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token } from './Token.entity';
+import { Token } from './token.entity';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
