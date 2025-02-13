@@ -10,7 +10,7 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.enableCors({
-    origin: [process.env.FRONTEND_URL], // Địa chỉ frontend
+    origin: [process.env.FRONTEND_URL, 'https://toeicmaster.online'], // Địa chỉ frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Phương thức được phép
     allowedHeaders: ['Origin', 'Content-Type', 'Authorization'], // Các header được phép
     credentials: true, // Để gửi cookie khi gọi API
