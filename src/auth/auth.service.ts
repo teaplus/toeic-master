@@ -78,6 +78,9 @@ export class AuthService {
     const isUser = await this.usersService.findByEmail(user.email);
     if (!isUser) {
       user.is_activated = true;
+      user.username = user.email.split('@')[0];
+      user.password = process.env.DEFAULT_PASSWORD || 'Abc@123456';
+      console.log(user);
       const createUser = await this.usersService.create(user);
       if (!createUser) {
         throw new UnauthorizedException('UnknowError');
