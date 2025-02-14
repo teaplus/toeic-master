@@ -107,12 +107,12 @@ export class AuthController {
 
   @Post('reset-password')
   async resetPassword(
-    @Body() body: { token: string; email: string; newpass: string },
+    @Body() body: { token: string; email: string; newPass: string },
   ) {
     return await this.authService.verifyNewPassword(
       body.token,
       body.email,
-      body.newpass,
+      body.newPass,
     );
   }
 }

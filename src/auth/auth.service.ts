@@ -286,7 +286,6 @@ export class AuthService {
   async verifyNewPassword(token: string, email: string, newPassword: string) {
     const user = await this.usersService.findByEmail(email);
     const istoken = await this.tokenService.findVerifyToken(token);
-
     if (!user) {
       throw new NotFoundException('Invalid user');
     }
