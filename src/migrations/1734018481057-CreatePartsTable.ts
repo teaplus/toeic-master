@@ -16,6 +16,7 @@ export class CreatePartsTable1734018481057 implements MigrationInterface {
           { name: 'name', type: 'varchar', isNullable: false },
           { name: 'description', type: 'text', isNullable: true },
           { name: 'order', type: 'integer', isNullable: true },
+          { name: 'numberOfQuestions', type: 'integer', isNullable: false },
         ],
       }),
     );

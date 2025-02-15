@@ -20,6 +20,10 @@ export class CreateTestSessionsTable1734018886523
           { name: 'started_at', type: 'timestamp', isNullable: true },
           { name: 'completed_at', type: 'timestamp', isNullable: true },
           { name: 'status', type: 'varchar', isNullable: true },
+          { name: 'timeRemaining', type: 'integer' },
+          { name: 'listening_score', type: 'integer', isNullable: true },
+          { name: 'reading_score', type: 'integer', isNullable: true },
+          { name: 'total_score', type: 'integer', isNullable: true },
         ],
       }),
     );

@@ -27,6 +27,10 @@ export class AddPartScoresTable1734281851610 implements MigrationInterface {
             default: 0,
             isNullable: false,
           },
+          {
+            name: 'partNumber',
+            type: 'integer',
+          },
         ],
         foreignKeys: [
           {

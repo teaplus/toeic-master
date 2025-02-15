@@ -236,5 +236,4 @@ sudo chown -R $USER:$USER .
 4. Push to branch
 5. Create Pull Request
 
-## License
-[MIT License](LICENSE)
+
