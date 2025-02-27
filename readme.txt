@@ -182,58 +182,28 @@ npm run migration:generate --name=migration_name
 # Revert migration
 npm run migration:revert
 ```
+## chạy trên local windows 
+#### Chạy dự án trên local Windows
 
-## Troubleshooting
-
-### 1. Database Connection Issues
 ```bash
-# Check database logs
-docker-compose logs db
+# Cài đặt các phụ thuộc
+npm install
 
-# Verify database connection
-docker exec toeic-db pg_isready -U postgres
+# Khởi động các container Docker
+docker-compose up -d --build
+
+# Chạy migrations cơ sở dữ liệu
+npm run migration:run
+
+# Bắt đầu server phát triển
+npm run start
+
+#chạy production
+npm run start:prod
+
+# Truy cập ứng dụng tại http://localhost:3000
 ```
 
-### 2. API Issues
-```bash
-# Check API logs
-docker-compose logs api
 
-# Restart API service
-docker-compose restart api
-```
-
-### 3. Permission Issues
-```bash
-# Fix permissions if needed
-sudo chown -R $USER:$USER .
-```
-
-## API Documentation
-
-### Authentication
-- POST /api/auth/login
-- POST /api/auth/register
-- POST /api/auth/forgot-password
-- POST /api/auth/reset-password
-
-### Users
-- GET /api/users/profile
-- PUT /api/users/profile
-- POST /api/users/change-password
-
-### Tests
-- GET /api/tests
-- GET /api/tests/:id
-- POST /api/tests
-- PUT /api/tests/:id
-- DELETE /api/tests/:id
-
-## Contributing
-1. Fork repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Create Pull Request
 
 

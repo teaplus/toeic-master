@@ -716,11 +716,11 @@ export class AdminService {
       type === 'users'
         ? [
             'id',
-            'fullName',
+            'fullname',
             'email',
-            'registrationDate',
-            'totalTests',
-            'averageScore',
+            'registrationdate',
+            'totaltests',
+            'averagescore',
           ]
         : ['id', 'title', 'type', 'totalattempts', 'averagescore'];
 
